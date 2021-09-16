@@ -67,7 +67,7 @@ export default {
     services: {
       auth: {
         initialize: {
-          onAuthStateChangedAction: 'onAuthStateChanged',
+          // onAuthStateChangedAction: 'onAuthStateChanged',
         },
       },
     },
