@@ -27,11 +27,11 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    "firebaseui/dist/firebaseui.css"
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-  ],
+  plugins: [],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -41,17 +41,37 @@ export default {
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
+    '@nuxtjs/vuetify'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/firebase'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
+
+  firebase: {
+    config: {
+      apiKey: "AIzaSyBntL8B-NMDtpydcj_rnxM-ujFddwHC_YU",
+      authDomain: "paorg-d443d.firebaseapp.com",
+      projectId: "paorg-d443d",
+      storageBucket: "paorg-d443d.appspot.com",
+      messagingSenderId: "164516699291",
+      appId: "1:164516699291:web:af2ed308cb2741e6e7fa3e",
+      measurementId: "G-QCNH8J27SL"
+    },
+    services: {
+      auth: {
+        initialize: {
+          // onAuthStateChangedAction: 'onAuthStateChanged',
+        },
+      },
+    },
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -73,6 +93,5 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-  }
+  build: {}
 }
