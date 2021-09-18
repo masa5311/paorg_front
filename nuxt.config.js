@@ -12,7 +12,7 @@ export default {
     titleTemplate: '%s - paorg_front',
     title: 'paorg_front',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'ja'
     },
     meta: [
       { charset: 'utf-8' },
@@ -21,13 +21,17 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {
+        rel: 'stylesheet',
+        href: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css'
+      }
     ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    "firebaseui/dist/firebaseui.css"
+    'firebaseui/dist/firebaseui.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -48,7 +52,8 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/firebase'
+    '@nuxtjs/firebase',
+    'nuxt-webfontloader'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -56,26 +61,27 @@ export default {
 
   firebase: {
     config: {
-      apiKey: "AIzaSyBntL8B-NMDtpydcj_rnxM-ujFddwHC_YU",
-      authDomain: "paorg-d443d.firebaseapp.com",
-      projectId: "paorg-d443d",
-      storageBucket: "paorg-d443d.appspot.com",
-      messagingSenderId: "164516699291",
-      appId: "1:164516699291:web:af2ed308cb2741e6e7fa3e",
-      measurementId: "G-QCNH8J27SL"
+      apiKey: 'AIzaSyBntL8B-NMDtpydcj_rnxM-ujFddwHC_YU',
+      authDomain: 'paorg-d443d.firebaseapp.com',
+      projectId: 'paorg-d443d',
+      storageBucket: 'paorg-d443d.appspot.com',
+      messagingSenderId: '164516699291',
+      appId: '1:164516699291:web:af2ed308cb2741e6e7fa3e',
+      measurementId: 'G-QCNH8J27SL'
     },
     services: {
       auth: {
         initialize: {
           // onAuthStateChangedAction: 'onAuthStateChanged',
-        },
-      },
-    },
+        }
+      }
+    }
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
+    treeShake: true,
     theme: {
       dark: true,
       themes: {
@@ -89,6 +95,24 @@ export default {
           success: colors.green.accent3
         }
       }
+    }
+  },
+
+  webfontloader: {
+    // google: {
+    //   families: ['Noto+Sans:400,700&display=swap', 'Noto+Sans+JP:400,700&display=swap']
+    // }
+    custom: {
+      families: [
+        'Noto+Sans:n4,n7',
+        'Noto+Sans+JP:n4,n7'
+      ],
+      urls: [
+        // for each Google Fonts add url + options you want
+        // here add font-display option
+        'https://fonts.googleapis.com/css?family=Noto+Sans:400,700&display=swap',
+        'https://fonts.googleapis.com/css?family=Noto+Sans+JP:400,700&display=swap'
+      ]
     }
   },
 
