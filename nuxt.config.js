@@ -84,6 +84,11 @@ export default {
     treeShake: true,
     theme: {
       themes: {
+        light: {
+          primary: '#6de85a',
+          accent: '#e85a6d',
+          secondary: '#5a6de8',
+        },
         dark: {
           primary: colors.blue.darken2,
           accent: colors.grey.darken3,
