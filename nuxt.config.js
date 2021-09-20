@@ -9,8 +9,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - paorg_front',
-    title: 'paorg_front',
+    titleTemplate: '%s - PAORG',
+    title: 'PAORG',
     htmlAttrs: {
       lang: 'ja'
     },
