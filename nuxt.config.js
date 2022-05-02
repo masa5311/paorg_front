@@ -7,12 +7,6 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
-  // 開発環境（Docker環境）用設定
-  server: {
-    port: 3000,
-    host: '0.0.0.0'
-  },
-
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - PAORG',
