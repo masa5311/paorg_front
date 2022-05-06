@@ -1,12 +1,11 @@
 <template>
   <div>
-    <v-row>
-      <v-col>
-        <v-card>
-          <Ranking />
-        </v-card>
-      </v-col>
-    </v-row>
+<!--    <v-row>-->
+<!--      <v-col>-->
+        <Ranking />
+        <NominatedHorseList class="mt-8" />
+<!--      </v-col>-->
+<!--    </v-row>-->
 <!--    <v-row justify='center' align='center'>-->
 <!--      <v-col cols='12' sm='8' md='6'>-->
 <!--        <v-card class='logo py-4 d-flex justify-center'>-->
@@ -89,6 +88,8 @@
 </template>
 <script>
 export default {
+  components: {},
+
   head() {
     return {
       title: 'メインページ'
