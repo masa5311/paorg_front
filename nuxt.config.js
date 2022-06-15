@@ -2,15 +2,34 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  ssr: false,
+  // ssr: false,
+  ssr: true,
 
   // Target: https://go.nuxtjs.dev/config-target
-  target: 'static',
+  // target: 'static',
+  target: 'server',
 
   // 開発環境（Docker環境）用設定
   server: {
     port: 3000,
     host: '0.0.0.0'
+  },
+
+  router: {
+    extendRoutes(routes, resolve) {
+      // 自動生成のルーティングを編集する
+      routes.forEach(route => {
+        if (route.name === 'index') {
+          route.props = true;
+        }
+      })
+      // routes.push({
+      //   path: '/',
+      //   component: resolve(__dirname, 'pages/index.vue'),
+      //   name: 'indexx',
+      //   props: true,
+      // })
+    }
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -21,13 +40,13 @@ export default {
       lang: 'ja'
     },
     meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
+      {charset: 'utf-8'},
+      {name: 'viewport', content: 'width=device-width, initial-scale=1'},
+      {hid: 'description', name: 'description', content: ''},
+      {name: 'format-detection', content: 'telephone=no'}
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'},
       {
         rel: 'stylesheet',
         href: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css'

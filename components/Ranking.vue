@@ -1,35 +1,35 @@
 <template>
   <div>
-<!--    <v-btn @click='get()'>テスト</v-btn>-->
-<!--    {{ res }}-->
     <v-card>
-      <v-card-title>2022 若鷹軍団 ランキング</v-card-title>
-      <v-simple-table>
-        <thead>
-        <tr>
-          <th class='text-left'>
-            順位
-          </th>
-          <th class='text-left'>
-            馬主名
-          </th>
-          <th class='text-left'>
-            ポイント
-          </th>
-          <th class='text-left'>
-            代表馬
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for='(item, i) in members' :key='i'>
-          <td>{{ item.rank }}</td>
-          <td>{{ item.userName }}</td>
-          <td>{{ item.point }}</td>
-          <td>{{ item.representativeHorse }}</td>
-        </tr>
-        </tbody>
-      </v-simple-table>
+      <v-card-title>{{ year }} ランキング</v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="ownerList"
+        show-expand
+        hide-default-footer
+        disable-sort
+        :loading="loading"
+      >
+        <!-- 指名馬展開 -->
+        <template v-slot:expanded-item="{ headers, item }">
+          <td :colspan="headers.length">
+            <v-data-table
+              :headers="headers2"
+              :items="item.nominationBeanList"
+              hide-default-footer
+              items-per-page="30"
+              disable-sort
+            >
+            </v-data-table>
+          </td>
+        </template>
+        <!-- 順位列 -->
+        <template v-slot:[`item.rank`]="{ index }">{{ index + 1 }}</template>
+        <!-- 馬主名にリンク付与 -->
+        <template v-slot:[`item.displayName`]="{ item }">
+          <a href="#">{{ item.displayName }}</a>
+        </template>
+      </v-data-table>
     </v-card>
   </div>
 </template>
@@ -37,23 +37,60 @@
 <script>
 export default {
   name: 'Ranking',
-  props: {},
 
   data() {
     return {
-      members: [],
-      // res: ''
+      loading: true,
+      headers: [
+        {text: '順位', value: 'rank'},
+        {text: '馬主名', value: 'displayName'},
+        {text: 'ポイント', value: 'point'}
+      ],
+      headers2: [
+        {text: '指名順位', value: 'nominateRank'},
+        {text: '馬名', value: 'horseName'},
+        {text: '性別', value: 'sex'},
+        {text: '所属', value: 'trainerShozokuPlace'},
+        {text: '厩舎', value: 'trainerName'},
+        {text: '父名', value: 'sireName'},
+        {text: '母名', value: 'damName'},
+      ],
+      ownerList: [],
+      // horseList: {
+      //   headers: [
+      //     {text: '指名順位', value: 'nominationRank'},
+      //     {text: '馬名', value: 'horseName'},
+      //   ],
+      //   items: {
+      //     // 3: [{nominationRank: '1', horseName: 'コマンドライン'}]
+      //   }
+      //
+      // }
+      year: 2021,
     }
   },
 
   computed: {},
 
+  created() {
+    this.$nuxt.$on('year', value => {
+      console.log('Ranking.vue:created:year:', value)
+      this.year = value
+    })
+  },
+
   async mounted() {
-    // this.members = await this.$axios.$get('/get_pog_ranking')
-    const params = {
-      groupId: "ユーザーID"
+  },
+
+  watch: {
+    year: {
+      handler() {
+        console.log('変更されました:年度:', this.year)
+        this.getRanking()
+
+      },
+      immediate: true,
     }
-    this.members = await this.$axios.$post('/get_owner_list_with_ranking', params)
   },
 
   // async updated() {
@@ -92,12 +129,40 @@ export default {
       } catch (e) {
         console.log('失敗')
       }
-    }
+    },
+
+    /**
+     * ランキング取得
+     * @returns {Promise<void>}
+     */
+    async getRanking() {
+      const params = {
+        groupId: 1,
+        year: this.year
+      }
+      console.log('年度', this.year)
+      this.ownerList = await this.$axios.$post('/get_owner_list_with_point', params)
+      console.log('this.ownerList', this.ownerList)
+      this.loading = false
+
+      // 指名馬リストを取得し、オーナーリストに設定
+      const retOwnerList = await
+        this.$axios.$post('/get_nomination_list_by_group',
+          params)
+      retOwnerList.forEach(value => {
+        const targetOwner = this.ownerList.find(owner => owner.id === value.id)
+        targetOwner.nominationBeanList = value.nominationBeanList
+      })
+      console.log('this.ownerList', this.ownerList)
+
+    },
   }
 
 }
 </script>
 
 <style scoped lang='scss'>
-
+a {
+  display: block;
+}
 </style>
