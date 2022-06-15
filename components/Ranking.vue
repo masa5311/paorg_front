@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title>{{ year }} ランキング</v-card-title>
       <v-data-table
-        :headers="headers"
+        :headers="rankingHeaders"
         :items="ownerList"
         show-expand
         hide-default-footer
@@ -14,7 +14,7 @@
         <template v-slot:expanded-item="{ headers, item }">
           <td :colspan="headers.length">
             <v-data-table
-              :headers="headers2"
+              :headers="nominationHeaders"
               :items="item.nominationBeanList"
               hide-default-footer
               items-per-page="30"
@@ -26,9 +26,9 @@
         <!-- 順位列 -->
         <template v-slot:[`item.rank`]="{ index }">{{ index + 1 }}</template>
         <!-- 馬主名にリンク付与 -->
-        <template v-slot:[`item.displayName`]="{ item }">
-          <a href="#">{{ item.displayName }}</a>
-        </template>
+<!--        <template v-slot:[`item.displayName`]="{ item }">-->
+<!--          <a href="#">{{ item.displayName }}</a>-->
+<!--        </template>-->
       </v-data-table>
     </v-card>
   </div>
@@ -41,12 +41,12 @@ export default {
   data() {
     return {
       loading: true,
-      headers: [
+      rankingHeaders: [
         {text: '順位', value: 'rank'},
         {text: '馬主名', value: 'displayName'},
         {text: 'ポイント', value: 'point'}
       ],
-      headers2: [
+      nominationHeaders: [
         {text: '指名順位', value: 'nominateRank'},
         {text: '馬名', value: 'horseName'},
         {text: '性別', value: 'sex'},

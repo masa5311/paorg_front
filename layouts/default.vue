@@ -1,6 +1,7 @@
 <template>
   <v-app dark>
     <v-navigation-drawer
+      :right="right"
       v-model='drawer'
       :mini-variant='miniVariant'
       expand-on-hover
@@ -11,18 +12,11 @@
       <v-list>
         <v-list-group
           no-action
-          prepend-icon="mdi-account-circle"
+          prepend-icon="mdi-crown"
         >
           <template v-slot:activator>
             <v-list-item-title>ランキング</v-list-item-title>
           </template>
-<!--          <v-list-item-->
-<!--            v-for="([year], i) in years"-->
-<!--            :key="i"-->
-<!--            :to="{name: 'index', params: {year: year}}"-->
-<!--          >-->
-<!--            <v-list-item-title v-text="year"></v-list-item-title>-->
-<!--          </v-list-item>-->
           <v-list-item
             v-for="([year], i) in years"
             :key="i"
@@ -32,24 +26,23 @@
             <v-list-item-title v-text="year"></v-list-item-title>
           </v-list-item>
         </v-list-group>
-        <v-list-item
-          v-for='(item, i) in items'
-          :key='i'
-          :to='item.to'
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text='item.title'/>
-          </v-list-item-content>
-        </v-list-item>
+        <!--        <v-list-item-->
+        <!--          v-for='(item, i) in items'-->
+        <!--          :key='i'-->
+        <!--          :to='item.to'-->
+        <!--          router-->
+        <!--          exact-->
+        <!--        >-->
+        <!--          <v-list-item-action>-->
+        <!--            <v-icon>{{ item.icon }}</v-icon>-->
+        <!--          </v-list-item-action>-->
+        <!--          <v-list-item-content>-->
+        <!--            <v-list-item-title v-text='item.title'/>-->
+        <!--          </v-list-item-content>-->
+        <!--        </v-list-item>-->
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar clipped-left fixed app>
-      <v-app-bar-nav-icon @click.stop='drawer = !drawer'/>
+    <v-app-bar clipped-left clipped-right fixed app>
       <!--      <v-btn icon @click.stop='miniVariant = !miniVariant'>-->
       <!--        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>-->
       <!--      </v-btn>-->
@@ -59,11 +52,14 @@
       <!--      <v-btn icon @click.stop='fixed = !fixed'>-->
       <!--        <v-icon>mdi-minus</v-icon>-->
       <!--      </v-btn>-->
-      <v-toolbar-title v-text='title'/>
-      <!--      <v-spacer />-->
-      <!--      <v-btn icon @click.stop='rightDrawer = !rightDrawer'>-->
-      <!--        <v-icon>mdi-menu</v-icon>-->
-      <!--      </v-btn>-->
+      <v-icon>mdi-horse-variant-fast</v-icon>
+      <v-toolbar-title class="ml-2" v-text='title'/>
+      <v-spacer/>
+      <v-app-bar-nav-icon @click.stop='drawer = !drawer'/>
+
+      <!--            <v-btn icon @click.stop='rightDrawer = !rightDrawer'>-->
+      <!--              <v-icon>mdi-menu</v-icon>-->
+      <!--            </v-btn>-->
     </v-app-bar>
     <v-main>
       <v-container>
@@ -128,6 +124,7 @@ export default {
      */
     setYear(value) {
       this.$nuxt.$emit('year', value)
+      this.drawer = !this.drawer
     },
   },
 }
