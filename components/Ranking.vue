@@ -8,27 +8,38 @@
         show-expand
         hide-default-footer
         disable-sort
-        :loading="loading"
+        :loading="rankingLoading"
       >
         <!-- 指名馬展開 -->
         <template v-slot:expanded-item="{ headers, item }">
-          <td :colspan="headers.length">
+          <td class="data_tables_xs" :colspan="headers.length">
             <v-data-table
               :headers="nominationHeaders"
               :items="item.nominationBeanList"
               hide-default-footer
-              items-per-page="30"
+              :items-per-page=-1
               disable-sort
+              :loading="nominationLoading"
             >
+              <!-- 馬名 -->
+              <template v-slot:[`item.horseName`]="{ item }">
+                <v-chip
+                  class="text-center d-block"
+                  :color="getColorByHorseGrades(item.numberOfRaces, item.point)"
+                  label
+                >
+                  {{ item.horseName }}
+                </v-chip>
+              </template>
             </v-data-table>
           </td>
         </template>
-        <!-- 順位列 -->
+        <!-- 順位 -->
         <template v-slot:[`item.rank`]="{ index }">{{ index + 1 }}</template>
         <!-- 馬主名にリンク付与 -->
-<!--        <template v-slot:[`item.displayName`]="{ item }">-->
-<!--          <a href="#">{{ item.displayName }}</a>-->
-<!--        </template>-->
+        <!--        <template v-slot:[`item.displayName`]="{ item }">-->
+        <!--          <a href="#">{{ item.displayName }}</a>-->
+        <!--        </template>-->
       </v-data-table>
     </v-card>
   </div>
@@ -40,16 +51,18 @@ export default {
 
   data() {
     return {
-      loading: true,
+      rankingLoading: true,
       rankingHeaders: [
-        {text: '順位', value: 'rank'},
+        {text: '順位', value: 'rank', align: 'center'},
         {text: '馬主名', value: 'displayName'},
-        {text: 'ポイント', value: 'point'}
+        {text: 'ポイント', value: 'point', align: 'center'}
       ],
+      nominationLoading: true,
       nominationHeaders: [
-        {text: '指名順位', value: 'nominateRank'},
+        {text: '指名順位', value: 'nominationRank', align: 'center'},
         {text: '馬名', value: 'horseName'},
-        {text: '性別', value: 'sex'},
+        {text: 'ポイント', value: 'point', align: 'right'},
+        {text: '性別', value: 'sex', align: 'center'},
         {text: '所属', value: 'trainerShozokuPlace'},
         {text: '厩舎', value: 'trainerName'},
         {text: '父名', value: 'sireName'},
@@ -85,9 +98,7 @@ export default {
   watch: {
     year: {
       handler() {
-        console.log('変更されました:年度:', this.year)
         this.getRanking()
-
       },
       immediate: true,
     }
@@ -143,7 +154,7 @@ export default {
       console.log('年度', this.year)
       this.ownerList = await this.$axios.$post('/get_owner_list_with_point', params)
       console.log('this.ownerList', this.ownerList)
-      this.loading = false
+      this.rankingLoading = false
 
       // 指名馬リストを取得し、オーナーリストに設定
       const retOwnerList = await
@@ -153,8 +164,21 @@ export default {
         const targetOwner = this.ownerList.find(owner => owner.id === value.id)
         targetOwner.nominationBeanList = value.nominationBeanList
       })
+      this.nominationLoading = false;
       console.log('this.ownerList', this.ownerList)
 
+    },
+
+    getColorByHorseGrades(numberObRaces, point) {
+      if (numberObRaces === 0) {
+        return ""
+      } else if (point === 0) {
+        return "purple lighten-3"
+      } else if (point <= 600) {
+        return "deep-orange lighten-3"
+      } else {
+        return "yellow accent-2"
+      }
     },
   }
 
@@ -164,5 +188,11 @@ export default {
 <style scoped lang='scss'>
 a {
   display: block;
+}
+@media screen and (max-width: 600px){
+  .v-data-table td.data_tables_xs {
+    display: block;
+    height: auto;
+  }
 }
 </style>
