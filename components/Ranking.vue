@@ -6,10 +6,28 @@
         :headers="rankingHeaders"
         :items="ownerList"
         show-expand
+        :expanded.sync="expanded"
         hide-default-footer
         disable-sort
         :loading="rankingLoading"
       >
+        <!--ツールチップ表示は一旦保留のためコメント化-->
+        <!--        <template v-slot:[`item.data-table-expand`]="{ item, isExpanded }">-->
+        <!--          <v-tooltip :right="!isXs" :left="isXs">-->
+        <!--            <template v-slot:activator="{ on, attrs }">-->
+        <!--              <v-icon-->
+        <!--                @click="handleExpansion(item, isExpanded)"-->
+        <!--                v-bind="attrs"-->
+        <!--                v-on="on"-->
+        <!--              >-->
+        <!--                {{ isExpanded ? "mdi-chevron-up" : "mdi-chevron-down" }}-->
+        <!--              </v-icon>-->
+        <!--            </template>-->
+        <!--            <span>{{-->
+        <!--                isExpanded ? "指名馬一覧を閉じる" : "指名馬一覧表示"-->
+        <!--              }}</span>-->
+        <!--          </v-tooltip>-->
+        <!--        </template>-->
         <!-- 指名馬展開 -->
         <template v-slot:expanded-item="{ headers, item }">
           <td class="data_tables_xs" :colspan="headers.length">
@@ -35,7 +53,7 @@
           </td>
         </template>
         <!-- 順位 -->
-        <template v-slot:[`item.rank`]="{ index }">{{ index + 1 }}</template>
+        <!--        <template v-slot:[`item.rank`]="{ index }">{{ index + 1 }}</template>-->
         <!-- 馬主名にリンク付与 -->
         <!--        <template v-slot:[`item.displayName`]="{ item }">-->
         <!--          <a href="#">{{ item.displayName }}</a>-->
@@ -51,9 +69,11 @@ export default {
 
   data() {
     return {
+      expanded: [],
       rankingLoading: true,
       rankingHeaders: [
-        {text: '順位', value: 'rank', align: 'center'},
+        {text: '', value: 'data-table-expand'},
+        {text: '順位', value: 'ranking', align: 'center'},
         {text: '馬主名', value: 'displayName'},
         {text: 'ポイント', value: 'point', align: 'center'}
       ],
@@ -83,16 +103,15 @@ export default {
     }
   },
 
-  computed: {},
+  computed: {
+    /**
+     * 画面横幅がxs（599px以下）かどうか判定
+     * @returns {boolean} 画面横幅がxs（599px以下）の場合：true
+     */
+    isXs() {
+      return this.$vuetify.breakpoint.name === 'xs'
+    }
 
-  created() {
-    this.$nuxt.$on('year', value => {
-      console.log('Ranking.vue:created:year:', value)
-      this.year = value
-    })
-  },
-
-  async mounted() {
   },
 
   watch: {
@@ -102,6 +121,16 @@ export default {
       },
       immediate: true,
     }
+  },
+
+  created() {
+    this.$nuxt.$on('year', value => {
+      console.log('Ranking.vue:created:year:', value)
+      this.year = value
+    })
+  },
+
+  async mounted() {
   },
 
   // async updated() {
@@ -143,23 +172,30 @@ export default {
     },
 
     /**
-     * ランキング取得
+     * ランキング更新
      * @returns {Promise<void>}
      */
     async getRanking() {
+      // オーナー別指名馬一覧の展開を初期化
+      this.expanded = []
+
       const params = {
         groupId: 1,
         year: this.year
       }
+
+      // グループ内ランキング取得
+      this.rankingLoading = true
+      this.ownerList = []
       console.log('年度', this.year)
       this.ownerList = await this.$axios.$post('/get_owner_list_with_point', params)
       console.log('this.ownerList', this.ownerList)
       this.rankingLoading = false
 
       // 指名馬リストを取得し、オーナーリストに設定
-      const retOwnerList = await
-        this.$axios.$post('/get_nomination_list_by_group',
-          params)
+      this.nominationLoading = true;
+      const retOwnerList =
+        await this.$axios.$post('/get_nomination_list_by_group', params)
       retOwnerList.forEach(value => {
         const targetOwner = this.ownerList.find(owner => owner.id === value.id)
         targetOwner.nominationBeanList = value.nominationBeanList
@@ -169,6 +205,18 @@ export default {
 
     },
 
+    /**
+     * 出走回数、ポイントにより馬名の色を変更する
+     * ■内容
+     * ・未出走：グレー
+     * ・出走済、未勝利：パープル
+     * ・1勝：赤
+     * ・オープン：黄色
+     *
+     * @param numberObRaces 出走回数
+     * @param point ポイント
+     * @returns {string} 馬名の色
+     */
     getColorByHorseGrades(numberObRaces, point) {
       if (numberObRaces === 0) {
         return ""
@@ -180,7 +228,23 @@ export default {
         return "yellow accent-2"
       }
     },
-  }
+
+    /**
+     * データテーブルの展開列のカスタマイズ（ツールチップ表示用）
+     * ■内容
+     * ・展開済みの場合：展開済リストから展開切り替え対象を削除
+     * ・未展開の場合：展開済リストに展開切り替え対象を登録
+     *
+     * @param item 展開切り替え対象
+     * @param state 展開状態（未展開 or 展開済）
+     */
+    handleExpansion(item, state) {
+      const itemIndex = this.expanded.indexOf(item)
+      state ? this.expanded.splice(itemIndex, 1) :
+        this.expanded.push(item)
+    },
+
+  },
 
 }
 </script>
@@ -189,7 +253,8 @@ export default {
 a {
   display: block;
 }
-@media screen and (max-width: 600px){
+
+@media screen and (max-width: 600px) {
   .v-data-table td.data_tables_xs {
     display: block;
     height: auto;
