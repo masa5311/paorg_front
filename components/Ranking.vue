@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card>
+    <v-card color="primary lighten-2">
       <v-card-title>{{ year }} ランキング</v-card-title>
       <v-data-table
         :headers="rankingHeaders"
@@ -33,7 +33,7 @@
           <td class="data_tables_xs" :colspan="headers.length">
             <v-data-table
               :headers="nominationHeaders"
-              :items="item.nominationBeanList"
+              :items="item.nominationList"
               hide-default-footer
               :items-per-page=-1
               disable-sort
@@ -58,6 +58,99 @@
         <!--        <template v-slot:[`item.displayName`]="{ item }">-->
         <!--          <a href="#">{{ item.displayName }}</a>-->
         <!--        </template>-->
+        <!--ポイント-->
+        <template v-slot:[`item.point`]="{ item }">
+          <v-dialog
+            width="400px"
+            :fullscreen="isXs"
+            scrollable
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="primary lighten-2 grey--text text--darken-4"
+                depressed
+                rounded
+                width="150px"
+                v-bind="attrs"
+                v-on="on"
+                :disabled="nominationLoading"
+              >
+                {{ item.point }}
+              </v-btn>
+            </template>
+            <template #default="dialog">
+              <v-card>
+                <v-toolbar color="primary lighten-2" flat dense>
+                  <v-toolbar-title class="text-body-1"></v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-btn icon @click="dialog.value = false">
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </v-toolbar>
+                <v-card-text
+                  class="px-0"
+                >
+                  <v-card
+                    v-for="nomination in
+                    getDisplayNomination(item.nominationList)"
+                    :key="nomination.id"
+                    color="primary lighten-4"
+                    outlined
+                    tile
+                  >
+                    <v-toolbar color="primary lighten-4" flat dense>
+                      <v-toolbar-title
+                        class="text-body-2">{{ nomination.horseName }}
+                      </v-toolbar-title>
+                      <v-spacer></v-spacer>
+                      <v-toolbar-title
+                        class="text-body-2">{{ nomination.point }}
+                      </v-toolbar-title>
+                    </v-toolbar>
+                    <!--レース名、ポイント-->
+                    <v-list dense flat>
+                      <v-list-item-group>
+                        <v-list-item
+                          v-for="(raceResult, i) in
+                            getDisplayRaceResult(nomination.raceResultList)"
+                          :key="i"
+                        >
+                          <v-row>
+                            <!--レース名-->
+                            <v-col cols="7">
+                              <v-list-item-content>
+                                <v-list-item-title
+                                  class="text-body-2 text-wrap"
+                                  v-text="raceResult.raceName"></v-list-item-title>
+                              </v-list-item-content>
+                            </v-col>
+                            <!--ランキング-->
+                            <v-col cols="2">
+                              <v-list-item-content>
+                                <v-list-item-title
+                                  class="text-body-2"
+                                  v-text="raceResult.ranking + '着'">
+                                </v-list-item-title>
+                              </v-list-item-content>
+                            </v-col>
+                            <!--ポイント-->
+                            <v-col cols="3">
+                              <v-list-item-content>
+                                <v-list-item-title
+                                  class="text-body-2 text-right"
+                                  v-text="raceResult.point"></v-list-item-title>
+                              </v-list-item-content>
+                            </v-col>
+                          </v-row>
+                        </v-list-item>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card>
+                </v-card-text>
+              </v-card>
+            </template>
+          </v-dialog>
+        </template>
       </v-data-table>
     </v-card>
   </div>
@@ -72,10 +165,16 @@ export default {
       expanded: [],
       rankingLoading: true,
       rankingHeaders: [
-        {text: '', value: 'data-table-expand'},
-        {text: '順位', value: 'ranking', align: 'center'},
-        {text: '馬主名', value: 'displayName'},
-        {text: 'ポイント', value: 'point', align: 'center'}
+        {text: '', value: 'data-table-expand', class: "primary lighten-4"},
+        {
+          text: '順位', value: 'ranking', align: 'center', class:
+            "primary lighten-4"
+        },
+        {text: '馬主名', value: 'displayName', class: "primary lighten-4"},
+        {
+          text: 'ポイント', value: 'point', align: 'center', class:
+            "primary lighten-4"
+        }
       ],
       nominationLoading: true,
       nominationHeaders: [
@@ -99,7 +198,8 @@ export default {
       //   }
       //
       // }
-      year: 2021,
+      year: this.getDefaultYear(),
+      dialog: false,
     }
   },
 
@@ -110,7 +210,7 @@ export default {
      */
     isXs() {
       return this.$vuetify.breakpoint.name === 'xs'
-    }
+    },
 
   },
 
@@ -138,6 +238,12 @@ export default {
   // },
 
   methods: {
+    getDefaultYear() {
+      const now = new Date()
+      const nowYear = now.getFullYear()
+      return now.getMonth() >= 5 ? nowYear : nowYear - 1
+    },
+
     /**
      * GET通信
      */
@@ -194,11 +300,11 @@ export default {
 
       // 指名馬リストを取得し、オーナーリストに設定
       this.nominationLoading = true;
-      const retOwnerList =
+      const ownerListWithNomination =
         await this.$axios.$post('/get_nomination_list_by_group', params)
-      retOwnerList.forEach(value => {
+      ownerListWithNomination.forEach(value => {
         const targetOwner = this.ownerList.find(owner => owner.id === value.id)
-        targetOwner.nominationBeanList = value.nominationBeanList
+        targetOwner.nominationList = value.nominationList
       })
       this.nominationLoading = false;
       console.log('this.ownerList', this.ownerList)
@@ -244,15 +350,23 @@ export default {
         this.expanded.push(item)
     },
 
+    getDisplayNomination(nominationList) {
+      return nominationList.filter(nomination => nomination.point !== 0);
+    },
+
+    getDisplayRaceResult(raceResultList) {
+      return raceResultList.filter(raceResult => raceResult.point !== 0);
+    },
+
   },
 
 }
 </script>
 
 <style scoped lang='scss'>
-a {
-  display: block;
-}
+//a {
+//  display: block;
+//}
 
 @media screen and (max-width: 600px) {
   .v-data-table td.data_tables_xs {

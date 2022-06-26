@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-navigation-drawer
       :right="right"
       v-model='drawer'
@@ -52,8 +52,8 @@
       <!--      <v-btn icon @click.stop='fixed = !fixed'>-->
       <!--        <v-icon>mdi-minus</v-icon>-->
       <!--      </v-btn>-->
-      <v-icon>mdi-horse-variant-fast</v-icon>
-      <v-toolbar-title class="ml-2" v-text='title'/>
+      <v-icon @click="toIndex()">mdi-horse-variant-fast</v-icon>
+      <v-toolbar-title class="o_title ml-2" v-text='title' @click="toIndex()"/>
       <v-spacer/>
       <v-app-bar-nav-icon @click.stop='drawer = !drawer'/>
 
@@ -126,6 +126,20 @@ export default {
       this.$nuxt.$emit('year', value)
       this.drawer = !this.drawer
     },
+
+    /**
+     * 初期表示ページに遷移する
+     */
+    toIndex() {
+      this.$nuxt.$emit('year', 2022)
+      this.$router.push('/')
+    }
   },
 }
 </script>
+<style scoped lang='scss'>
+.o_title {
+  cursor: pointer;
+}
+
+</style>
