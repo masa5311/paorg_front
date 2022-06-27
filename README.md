@@ -2,18 +2,26 @@
 
 ## Build Setup
 
+### 初期インストール（依存関係のインストール）
 ```bash
-# install dependencies
 $ npm install
+```
 
-# serve with hot reload at localhost:3000
+### アプリケーション起動
+```bash
 $ npm run dev
+ ```
+- ホットリロードされる
+- URL： localhost:3000
 
-# build for production and launch server
+### build for production and launch server
+```bash
 $ npm run build
 $ npm run start
+```
 
-# generate static project
+### generate static project
+```bash
 $ npm run generate
 ```
 
