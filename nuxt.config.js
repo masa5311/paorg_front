@@ -2,12 +2,12 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  // ssr: false,
-  ssr: true,
+  ssr: false,
+  // ssr: true,
 
   // Target: https://go.nuxtjs.dev/config-target
-  // target: 'static',
-  target: 'server',
+  target: 'static',
+  // target: 'server',
 
   // 開発環境（Docker環境）用設定
   server: {
@@ -84,6 +84,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // baseURL: 'http://localhost:8080/'
+    // 開発環境用APIのURL
     baseURL: 'http://192.168.1.5:8080/'
   },
 
