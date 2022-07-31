@@ -84,8 +84,8 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // baseURL: 'http://localhost:8080/'
-    // ステージング/本番環境用APIのURL
-    baseURL: 'http://192.168.1.5/api'
+    // 本番環境用APIのURL
+    baseURL: 'https://paorg.jp/api'
   },
 
   firebase: {
