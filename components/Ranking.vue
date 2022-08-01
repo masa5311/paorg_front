@@ -41,13 +41,37 @@
             >
               <!-- 馬名 -->
               <template v-slot:[`item.horseName`]="{ item }">
-                <v-chip
-                  class="text-center d-block"
-                  :color="getColorByHorseGrades(item.numberOfRaces, item.point)"
-                  label
-                >
-                  {{ item.horseName }}
-                </v-chip>
+                <v-menu :offset-x="true" transition="scale-transition">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      block
+                      :color="getColorByHorseGrades(item.numberOfRaces, item.point)"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      {{ item.horseName }}
+                    </v-btn>
+                  </template>
+                  <v-list dense>
+                    <v-subheader>netkeibaリンク</v-subheader>
+                    <v-divider></v-divider>
+                    <v-list-item
+                      :href="'https://db.netkeiba.com/horse/' +
+                      item.pedigreeRegistrationNumber " target="_blank">
+                      <v-list-item-title>TOP</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item
+                      :href="'https://db.netkeiba.com/horse/ped/' +
+                      item.pedigreeRegistrationNumber " target="_blank">
+                      <v-list-item-title>血統</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item
+                      :href="'https://db.netkeiba.com/?pid=horse_board&id=' +
+                      item.pedigreeRegistrationNumber " target="_blank">
+                      <v-list-item-title>掲示板</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </template>
             </v-data-table>
           </td>
@@ -68,7 +92,6 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 color="primary lighten-2 grey--text text--darken-4"
-                depressed
                 rounded
                 width="150px"
                 v-bind="attrs"
@@ -225,7 +248,6 @@ export default {
 
   created() {
     this.$nuxt.$on('year', value => {
-      console.log('Ranking.vue:created:year:', value)
       this.year = value
     })
   },
@@ -262,9 +284,6 @@ export default {
         // const res = await
         //   this.$axios.$post('/get_owner_list_with_ranking', params)
         // this.members = await this.$axios.$get('/get_nomination_list_by_id_and_year')
-        console.log(this.members)
-        console.log(this.members[0])
-        console.log(this.members[0].userName)
         // console.log(this.members[0].displayName)
         // console.log(this.members[0].nominationList)
         // console.log(res)
@@ -293,9 +312,7 @@ export default {
       // グループ内ランキング取得
       this.rankingLoading = true
       this.ownerList = []
-      console.log('年度', this.year)
       this.ownerList = await this.$axios.$post('/get_owner_list_with_point', params)
-      console.log('this.ownerList', this.ownerList)
       this.rankingLoading = false
 
       // 指名馬リストを取得し、オーナーリストに設定
@@ -307,7 +324,6 @@ export default {
         targetOwner.nominationList = value.nominationList
       })
       this.nominationLoading = false;
-      console.log('this.ownerList', this.ownerList)
 
     },
 
@@ -325,7 +341,7 @@ export default {
      */
     getColorByHorseGrades(numberObRaces, point) {
       if (numberObRaces === 0) {
-        return ""
+        return "grey lighten-3"
       } else if (point === 0) {
         return "purple lighten-3"
       } else if (point <= 600) {
