@@ -41,7 +41,8 @@
             >
               <!-- 馬名 -->
               <template v-slot:[`item.horseName`]="{ item }">
-                <v-menu :offset-x="true" transition="scale-transition">
+                <v-menu :offset-x="true" transition="scale-transition"
+                        open-on-hover>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
                       block
@@ -52,8 +53,11 @@
                       {{ item.horseName }}
                     </v-btn>
                   </template>
-                  <v-list dense>
-                    <v-subheader>netkeibaリンク</v-subheader>
+                  <v-list dense subheader>
+                    <!--外部リンク-->
+                    <v-subheader class="primary lighten-4">
+                      netkeibaリンク
+                    </v-subheader>
                     <v-divider></v-divider>
                     <v-list-item
                       :href="'https://db.netkeiba.com/horse/' +
