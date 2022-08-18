@@ -183,13 +183,37 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang='ts'>
+import Vue from 'vue';
+
+interface Nomination {
+  [extraProps: string]: any;
+}
+
+interface Owner {
+  id: number;
+  nominationList?: Nomination[];
+
+  [extraProps: string]: any;
+}
+
+interface RaceResult {
+  point: number;
+}
+
+interface DataType {
+  ownerList: Owner[];
+
+  [extraProps: string]: any;
+}
+
+export default Vue.extend({
   name: 'Ranking',
 
-  data() {
+  data(): DataType {
     return {
       expanded: [],
+      members: {},
       rankingLoading: true,
       rankingHeaders: [
         {text: '', value: 'data-table-expand', class: "primary lighten-4"},
@@ -225,7 +249,8 @@ export default {
       //   }
       //
       // }
-      year: this.getDefaultYear(),
+      // year: this.getDefaultYear(),
+      year: 2022,
       dialog: false,
     }
   },
@@ -251,7 +276,7 @@ export default {
   },
 
   created() {
-    this.$nuxt.$on('year', value => {
+    this.$nuxt.$on('year', (value: number) => {
       this.year = value
     })
   },
@@ -323,9 +348,12 @@ export default {
       this.nominationLoading = true;
       const ownerListWithNomination =
         await this.$axios.$post('/get_nomination_list_by_group', params)
-      ownerListWithNomination.forEach(value => {
-        const targetOwner = this.ownerList.find(owner => owner.id === value.id)
-        targetOwner.nominationList = value.nominationList
+      ownerListWithNomination.forEach((value: Owner) => {
+        const targetOwner = this.ownerList.find((owner: Owner) =>
+          owner.id === value.id)
+        if (typeof targetOwner !== 'undefined') {
+          targetOwner.nominationList = value.nominationList
+        }
       })
       this.nominationLoading = false;
 
@@ -343,7 +371,7 @@ export default {
      * @param point ポイント
      * @returns {string} 馬名の色
      */
-    getColorByHorseGrades(numberObRaces, point) {
+    getColorByHorseGrades(numberObRaces: number, point: number) {
       if (numberObRaces === 0) {
         return "grey lighten-3"
       } else if (point === 0) {
@@ -364,23 +392,23 @@ export default {
      * @param item 展開切り替え対象
      * @param state 展開状態（未展開 or 展開済）
      */
-    handleExpansion(item, state) {
-      const itemIndex = this.expanded.indexOf(item)
-      state ? this.expanded.splice(itemIndex, 1) :
-        this.expanded.push(item)
-    },
+    // handleExpansion(item, state) {
+    //   const itemIndex = this.expanded.indexOf(item);
+    //   state ? this.expanded.splice(itemIndex, 1) :
+    //     this.expanded.push(item);
+    // },
 
-    getDisplayNomination(nominationList) {
+    getDisplayNomination(nominationList: Nomination[]) {
       return nominationList.filter(nomination => nomination.point !== 0);
     },
 
-    getDisplayRaceResult(raceResultList) {
+    getDisplayRaceResult(raceResultList: RaceResult[]) {
       return raceResultList.filter(raceResult => raceResult.point !== 0);
     },
 
   },
 
-}
+});
 </script>
 
 <style scoped lang='scss'>

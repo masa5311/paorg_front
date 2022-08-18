@@ -16,7 +16,7 @@ export default {
   },
 
   router: {
-    extendRoutes(routes, resolve) {
+    extendRoutes(routes) {
       // 自動生成のルーティングを編集する
       routes.forEach(route => {
         if (route.name === 'index') {
@@ -70,7 +70,8 @@ export default {
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
+    '@nuxt/typescript-build'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules

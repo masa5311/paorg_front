@@ -82,8 +82,70 @@
   </v-app>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+// import {Component, Vue} from "nuxt-property-decorator";
+//
+// interface item {
+//   icon: string;
+//   title: string;
+//   to: string;
+// }
+//
+// @Component({
+//   components: {}
+// })
+// export default class extends Vue {
+//   clipped = false;
+//   drawer = false;
+//   fixed = false;
+//   items: item[] = [
+//     // {
+//     //   icon: 'mdi-apps',
+//     //   title: 'Welcome',
+//     //   to: '/'
+//     // },
+//     // {
+//     //   icon: 'mdi-chart-bubble',
+//     //   title: 'Inspire',
+//     //   to: '/inspire'
+//     // },
+//     {
+//       icon: 'mdi-chart-bubble',
+//       title: '指名馬一覧',
+//       to: '/NominatedHorseList'
+//     }
+//   ];
+//
+//   miniVariant = false;
+//   right = true;
+//   rightDrawer = false;
+//   title = 'PAORG';
+//   years: [number][] = [
+//     [2022],
+//     [2021],
+//   ];
+//
+//   /**
+//    * 選択された年度を各コンポーネント用に展開する
+//    * @param value 年度
+//    */
+//   setYear(value: number) {
+//     this.$nuxt.$emit('year', value)
+//     this.drawer = !this.drawer
+//   }
+//
+//   /**
+//    * 初期表示ページに遷移する
+//    */
+//   toIndex() {
+//     this.$nuxt.$emit('year', 2022)
+//     this.$router.push('/')
+//   }
+// }
+
+import Vue from "vue";
+
+export default Vue.extend({
   data() {
     return {
       clipped: false,
@@ -122,7 +184,7 @@ export default {
      * 選択された年度を各コンポーネント用に展開する
      * @param value 年度
      */
-    setYear(value) {
+    setYear(value: number) {
       this.$nuxt.$emit('year', value)
       this.drawer = !this.drawer
     },
@@ -135,7 +197,8 @@ export default {
       this.$router.push('/')
     }
   },
-}
+})
+
 </script>
 <style scoped lang='scss'>
 .o_title {
